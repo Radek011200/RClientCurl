@@ -14,6 +14,11 @@ use GuzzleHttp\Psr7\Utils;
 class Curl
 {
     /**
+     * @var array
+     */
+    private array $basicAuthLoginData = [];
+
+    /**
      * @param RequestInterface $request
      * @return ResponseInterface
      * @throws Exception
@@ -28,6 +33,13 @@ class Curl
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        if ($this->basicAuthLoginData)
+        {
+            curl_setopt($curl, CURLOPT_USERPWD, $this->basicAuthLoginData['login'] . ':' . $this->basicAuthLoginData['password']);
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        }
+
         $response = curl_exec($curl);
 
 
@@ -85,15 +97,66 @@ class Curl
      */
     public function sendGet(string $url, array $options = []): ResponseInterface
     {
-        $request = new Request("GET", $url);
-        $uri = new Uri($url);
-        $request->withUri($uri);
-
+        $request = $this->setMethodAndUrl("GET", $url);
         $request = $this->prepareRequest($request, $options);
         return $this->sendRequest($request);
     }
 
     /**
+     * @param string $url
+     * @param array $options
+     * @return ResponseInterface
+     * @throws Exception
+     */
+    public function sendPost(string $url, array $options = []): ResponseInterface
+    {
+        $request = $this->setMethodAndUrl("POST", $url);
+        $request = $this->prepareRequest($request, $options);
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * @param string $url
+     * @param array $options
+     * @return ResponseInterface
+     * @throws Exception
+     */
+    public function sendDelete(string $url, array $options = []): ResponseInterface
+    {
+        $request = $this->setMethodAndUrl("DELETE", $url);
+        $request = $this->prepareRequest($request, $options);
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * @param string $url
+     * @param array $options
+     * @return ResponseInterface
+     * @throws Exception
+     */
+    public function sendPut(string $url, array $options = []): ResponseInterface
+    {
+        $request = $this->setMethodAndUrl("PUT", $url);
+        $request = $this->prepareRequest($request, $options);
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @return Request
+     */
+    private function setMethodAndUrl(string $method, string $url): Request
+    {
+        $request = new Request($method, $url);
+        $uri = new Uri($url);
+        $request->withUri($uri);
+        return $request;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return void
      * @throws Exception
      */
     private function checkResponse(ResponseInterface $response): void
@@ -103,5 +166,16 @@ class Curl
 
         if($toCheck >= 4 && $toCheck < 6)
             throw new Exception($status . " " . $response->getReasonPhrase());
+    }
+
+    /**
+     * @param string $login
+     * @param string $password
+     * @return void
+     */
+    public function setBasicAuthData(string $login, string $password): void
+    {
+        $this->basicAuthLoginData['login'] = $login;
+        $this->basicAuthLoginData['password'] = $password;
     }
 }
