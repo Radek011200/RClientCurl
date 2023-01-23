@@ -2,6 +2,7 @@
     "name": "radek011200/curl-client-php",
     "description": "Curl based on rest client library",
     "type": "library",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Radek011200\\CurlClientPhp\\": "src/"
