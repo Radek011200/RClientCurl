@@ -32,7 +32,7 @@
         "phpunit/phpunit": "10.0.x-dev"
     },
     "require": {
-        "guzzlehttp/psr7": "2.4.x-dev",
+        "guzzlehttp/psr7": "^2.4",
         "php": "^8.1",
         "ext-curl": "*"
     }
