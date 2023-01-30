@@ -26,7 +26,6 @@ class Curl extends CurlClient
 
         return $this->sendRequest($request);
     }
-
     /**
      * @param string $url
      * @param array $options
