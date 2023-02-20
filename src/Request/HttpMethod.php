@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Radek011200\CurlClientPhp;
+namespace Radek011200\CurlClientPhp\Request;
 
 class HttpMethod
 {

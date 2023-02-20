@@ -5,6 +5,8 @@ namespace Radek011200\CurlClientPhp\Tests;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Radek011200\CurlClientPhp\Curl;
+use Radek011200\CurlClientPhp\Request\Header;
+use Radek011200\CurlClientPhp\Request\Options;
 
 class CurlTest extends TestCase
 {
@@ -17,11 +19,18 @@ class CurlTest extends TestCase
      * @var Curl
      */
     private Curl $curl;
+
+    /**
+     * @var Options
+     */
+    private Options $options;
+
     const URL = "https://433o2.wiremockapi.cloud/json";
 
     protected function setUp(): void
     {
         $this->curl = new Curl();
+        $this->options = new Options();
     }
 
     /**
@@ -30,15 +39,11 @@ class CurlTest extends TestCase
      */
     public function testWhenSendRequestPostExceptStatusCodeIsCreatedAndResponseIsJson(): void
     {
-        $response = $this->curl->Post(self::URL, [
-            "headers" => [
-                "Accept" => "application/json",
-            ],
-            "body" => [
-                "id"=> 11,
-                "value"=> "Some value"
-            ]
-        ]);
+        $this->options
+            ->addHeader(new Header('Accept', 'application/json'))
+            ->withBody(["id" => 11, "value" => "Some value"]);
+
+        $response = $this->curl->Post(self::URL, $this->options);
 
         $responseBody = json_decode($response->getBody()->getContents(), true);
 
@@ -63,7 +68,7 @@ class CurlTest extends TestCase
      */
     public function testWhenSendRequestGetExceptStatusCodeIsOkAndResponseIsJson(): void
     {
-        $response = $this->curl->Get(self::URL . '/' . self::$id);
+        $response = $this->curl->Get(self::URL . '/' . self::$id, $this->options);
         $responseBody = json_decode($response->getBody()->getContents(), true);
 
         $this->assertSame([
@@ -82,15 +87,10 @@ class CurlTest extends TestCase
      */
     public function testWhenSendRequestPutExceptStatusCodeIsOkAndResponseIsJson(): void
     {
-        $response = $this->curl->Put(self::URL . '/' . self::$id, [
-            "headers" => [
-                "Accept" => "application/json",
-            ],
-            "body" => [
-                "id"=> 11,
-                "value"=> "Some value"
-            ]
-        ]);
+        $this->options
+            ->addHeader(New Header('Accept', 'application/json'))
+            ->withBody(["id" => 11, "value" => "Some value"]);
+        $response = $this->curl->Put(self::URL . '/' . self::$id, $this->options);
 
         $responseBody = json_decode($response->getBody()->getContents(), true);
 
