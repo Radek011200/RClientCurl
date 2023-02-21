@@ -13,6 +13,9 @@ use Radek011200\CurlClientPhp\Response\HandleResponse;
 class CurlHandler
 {
     /**
+     * @param RequestInterface $request
+     * @param Options $options
+     * @return ResponseInterface
      * @throws Exception
      */
     public function handle(RequestInterface $request, Options $options): ResponseInterface
