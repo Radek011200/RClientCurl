@@ -5,6 +5,7 @@ namespace Radek011200\CurlClientPhp\Tests;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Radek011200\CurlClientPhp\Curl;
+use Radek011200\CurlClientPhp\Request\CurlOpt;
 use Radek011200\CurlClientPhp\Request\Header;
 use Radek011200\CurlClientPhp\Request\Options;
 
@@ -135,6 +136,40 @@ class CurlTest extends TestCase
         }
     }
 
+    public function testJwtAuthorization(): void
+    {
+        $this->options
+            ->addJwtToken(uniqid());
 
+        $this->assertTrue($this->options->isJwtToken());
+    }
 
+    public function testBasicAuthorization()
+    {
+        $this->options->addBasicAuthLoginData('login', 'password');
+
+        $this->assertTrue($this->options->isBasicAuthLoginData());
+        $this->assertIsArray($this->options->getBasicAuthLogin());
+        $this->assertSame([
+            'login' => 'login',
+            'password' => 'password'
+        ], $this->options->getBasicAuthLogin());
+
+        $this->options->clearBasicAuthLoginData();
+
+        $this->assertSame([], $this->options->getBasicAuthLogin());
+    }
+
+    public function testCurlOpt()
+    {
+        $data = [
+            'asd' => 'dsa',
+            'xzc' => 'zxc'
+        ];
+
+        $this->options->addCurlOPT(new CurlOpt(CURLOPT_POSTFIELDS, $data));
+
+        $this->assertSame($this->options->getCurlOPT()[0]->key, CURLOPT_POSTFIELDS);
+        $this->assertSame($this->options->getCurlOPT()[0]->value, $data);
+    }
 }

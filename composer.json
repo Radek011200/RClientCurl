@@ -20,7 +20,7 @@
         }
     ],
     "minimum-stability": "dev",
-    "version": "1.0.3",
+    "version": "1.0.5",
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true
