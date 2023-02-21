@@ -5,10 +5,10 @@ namespace Radek011200\CurlClientPhp\Request;
 
 class CurlOpt
 {
-    public string $key;
+    public int $key;
     public mixed $value;
 
-    public function __construct(string $key, mixed $value)
+    public function __construct(int $key, mixed $value)
     {
         $this->key = $key;
         $this->value = $value;

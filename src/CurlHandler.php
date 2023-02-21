@@ -5,6 +5,7 @@ namespace Radek011200\CurlClientPhp;
 use Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Radek011200\CurlClientPhp\Request\HttpMethod;
 use Radek011200\CurlClientPhp\Request\Options;
 use Radek011200\CurlClientPhp\Response\HandleResponse;
 
@@ -20,10 +21,16 @@ class CurlHandler
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $request->getMethod());
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->prepareHeader($request));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $request->getBody());
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+        if($request->getMethod() === HttpMethod::POST ||
+            $request->getMethod() === HttpMethod::PUT ||
+            $request->getMethod() === HttpMethod::PATCH)
+        {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $request->getBody());
+        }
 
         foreach ($options->getCurlOPT() as $option)
         {

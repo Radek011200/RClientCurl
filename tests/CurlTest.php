@@ -39,11 +39,17 @@ class CurlTest extends TestCase
      */
     public function testWhenSendRequestPostExceptStatusCodeIsCreatedAndResponseIsJson(): void
     {
+        $jwtToken = "xzvhkjbhgjbdfhvjbdfvhjbfdv";
+
         $this->options
             ->addHeader(new Header('Accept', 'application/json'))
-            ->withBody(["id" => 11, "value" => "Some value"]);
+            ->addJwtToken($jwtToken);
 
-        $response = $this->curl->Post(self::URL, $this->options);
+        $this->assertTrue($this->options->isJwtToken());
+
+        $response = $this->curl->Post(self::URL, $this->options, [
+            "id" => 11,
+            "value" => "Some value"]);
 
         $responseBody = json_decode($response->getBody()->getContents(), true);
 
@@ -88,9 +94,9 @@ class CurlTest extends TestCase
     public function testWhenSendRequestPutExceptStatusCodeIsOkAndResponseIsJson(): void
     {
         $this->options
-            ->addHeader(New Header('Accept', 'application/json'))
-            ->withBody(["id" => 11, "value" => "Some value"]);
-        $response = $this->curl->Put(self::URL . '/' . self::$id, $this->options);
+            ->addHeader(New Header('Accept', 'application/json'));
+
+        $response = $this->curl->Put(self::URL . '/' . self::$id, $this->options, ["id" => 11, "value" => "Some value"]);
 
         $responseBody = json_decode($response->getBody()->getContents(), true);
 
@@ -103,4 +109,32 @@ class CurlTest extends TestCase
         $this->assertArrayHasKey('Content-Type', $response->getHeaders());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testWhenSendRequestDeleteExceptStatusCodeIsNoContent(): void
+    {
+        $this->options
+            ->addHeader(New Header('Accept', 'application/json'));
+        $response = $this->curl->Delete(self::URL . '/' . self::$id, $this->options);
+
+        $this->assertEquals(204, $response->getStatusCode());
+    }
+
+    public function testWhenSendRequestGetExceptExceptionAndStatusCodeIsNotFound(): void
+    {
+        $this->options
+            ->addHeader(New Header('Accept', 'application/json'));
+
+        try {
+            $this->curl->Get(self::URL . '/' . uniqid(), $this->options);
+        } catch (Exception $exception) {
+            $this->assertEquals('The requested URL returned error: 404', $exception->getMessage());
+            return ;
+        }
+    }
+
+
+
 }

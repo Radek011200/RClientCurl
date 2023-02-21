@@ -13,11 +13,6 @@ class Options
      */
     private array $headers = [];
 
-    /*
-     * Psr\Http\Message\StreamInterface
-     */
-    private mixed $body = null;
-
     /**
      * @var array
      */
@@ -66,24 +61,6 @@ class Options
     }
 
     /**
-     * @param array $body
-     * @return StreamInterface
-     */
-    public function withBody(array $body): StreamInterface
-    {
-        $this->body = Utils::streamFor(json_encode($body));
-        return $this->body;
-    }
-
-    /**
-     * @return StreamInterface|null
-     */
-    public function getBody(): StreamInterface|null
-    {
-        return $this->body;
-    }
-
-    /**
      * @param string $jwtToken
      * @return $this
      */
@@ -111,6 +88,18 @@ class Options
     public function getBasicAuthLogin(): array
     {
         return $this->basicAuthLoginData;
+    }
+
+    /**
+     * @return true
+     */
+    public function isJwtToken(): bool
+    {
+        foreach ($this->getHeaders() as $header) {
+            if ($header->key === 'Authorization')
+                return true;
+        }
+        return false;
     }
 
     /**
